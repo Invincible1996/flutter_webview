@@ -594,6 +594,14 @@ class WebViewController {
     return _webViewPlatformController.reload();
   }
 
+    Future<void> onPause() {
+    return _webViewPlatformController.onPause();
+  }
+
+    Future<void> onResume() {
+    return _webViewPlatformController.onResume();
+  }
+
   /// Clears all caches used by the [WebView].
   ///
   /// The following caches are cleared:

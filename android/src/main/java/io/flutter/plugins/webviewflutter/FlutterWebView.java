@@ -199,6 +199,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             case "reload":
                 reload(result);
                 break;
+            case "onPause":
+                onPause(result);
+                break;
+            case "onResume":
+                onResume(result);
+                break;
             case "currentUrl":
                 currentUrl(result);
                 break;
@@ -253,6 +259,16 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         if (webView.canGoForward()) {
             webView.goForward();
         }
+        result.success(null);
+    }
+
+    private void onResume(Result result) {
+        webView.onResume();
+        result.success(null);
+    }
+
+    private void onPause(Result result) {
+        webView.onPause();
         result.success(null);
     }
 

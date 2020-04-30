@@ -226,6 +226,17 @@ abstract class WebViewPlatformController {
         "WebView reload is not implemented on the current platform");
   }
 
+  /// Reloads the current URL.
+  Future<void> onPause() {
+    throw UnimplementedError(
+        "WebView onPause is not implemented on the current platform");
+  }
+
+  Future<void> onResume() {
+    throw UnimplementedError(
+        "WebView onResume is not implemented on the current platform");
+  }
+
   /// Clears all caches used by the [WebView].
   ///
   /// The following caches are cleared:
