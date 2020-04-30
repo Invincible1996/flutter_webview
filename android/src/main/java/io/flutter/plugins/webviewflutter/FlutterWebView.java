@@ -91,46 +91,61 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     private static class MyWebChromeClient extends WebChromeClient {
         private View mCustomView;
-        private WebChromeClient.CustomViewCallback mCustomViewCallback;
-        protected FrameLayout mFullscreenContainer;
-        private int mOriginalOrientation;
-        private int mOriginalSystemUiVisibility;
+        private CustomViewCallback mCustomViewCallback;
+        private WebView webview;
+        private int normalSystemUiVisibility;
         private Activity activity;
 
         public MyWebChromeClient(WebView webview, Activity activity) {
-            this.mCustomView = webview;
+            this.webview = webview;
             this.activity = activity;
         }
 
-        public Bitmap getDefaultVideoPoster() {
-            if (mCustomView == null) {
-                return null;
-            }
-            return BitmapFactory.decodeResource(activity.getResources(), 2130837573);
-        }
-
-        public void onHideCustomView() {
-            ((FrameLayout) activity.getWindow().getDecorView()).removeView(this.mCustomView);
-            this.mCustomView = null;
-            activity.getWindow().getDecorView().setSystemUiVisibility(this.mOriginalSystemUiVisibility);
-            activity.setRequestedOrientation(this.mOriginalOrientation);
-            this.mCustomViewCallback.onCustomViewHidden();
-            this.mCustomViewCallback = null;
-        }
-
-        public void onShowCustomView(View paramView, WebChromeClient.CustomViewCallback paramCustomViewCallback) {
-            if (this.mCustomView != null) {
+        @Override
+        public void onShowCustomView(View view, CustomViewCallback callback) {
+            if (mCustomView != null || activity == null) {
                 onHideCustomView();
                 return;
             }
-            this.mCustomView = paramView;
-            this.mOriginalSystemUiVisibility = activity.getWindow().getDecorView().getSystemUiVisibility();
-            this.mOriginalOrientation = activity.getRequestedOrientation();
-            this.mCustomViewCallback = paramCustomViewCallback;
-            ((FrameLayout) activity.getWindow().getDecorView()).addView(this.mCustomView, new FrameLayout.LayoutParams(-1, -1));
-            activity.getWindow().getDecorView().setSystemUiVisibility(3846 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            mCustomView = view;
+            mCustomView.setBackgroundColor(0xff000000);
+            mCustomViewCallback = callback;
+            FrameLayout decorView = (FrameLayout) activity.getWindow().getDecorView();
+            normalSystemUiVisibility = decorView.getWindowSystemUiVisibility();
+            decorView.addView(this.mCustomView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            webview.setVisibility(View.GONE);
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                            // Set the content to appear under the system bars so that the
+                            // content doesn't resize when the system bars hide and show.
+                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            // Hide the nav bar and status bar
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
+            super.onShowCustomView(view, callback);
+        }
+
+        public void onHideCustomView() {
+            Log.d("webviewtest", "onHideCustomView: ");
+            webview.setVisibility(View.VISIBLE);
+            if (mCustomView == null || activity == null) {
+                return;
+            }
+
+            mCustomView.setVisibility(View.GONE);
+
+            FrameLayout decorView = (FrameLayout) activity.getWindow().getDecorView();
+            decorView.removeView(mCustomView);
+            mCustomViewCallback.onCustomViewHidden();
+            mCustomView = null;
+            super.onHideCustomView();
+            decorView.setSystemUiVisibility(normalSystemUiVisibility);
+            Log.d("webviewtest", "hide normalSystemUiVisibility: " + decorView.getSystemUiVisibility());
         }
     }
+}
 
     @Override
     public View getView() {
