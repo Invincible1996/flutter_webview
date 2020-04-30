@@ -144,7 +144,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             decorView.setSystemUiVisibility(normalSystemUiVisibility);
             Log.d("webviewtest", "hide normalSystemUiVisibility: " + decorView.getSystemUiVisibility());
         }
-    }
 }
 
     @Override
