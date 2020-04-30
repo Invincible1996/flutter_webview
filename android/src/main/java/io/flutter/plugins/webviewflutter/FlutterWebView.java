@@ -98,7 +98,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         private Activity activity;
 
         public MyWebChromeClient(WebView webview, Activity activity) {
-            this.webview = webview;
+            this.mCustomView = webview;
             this.activity = activity;
         }
 
